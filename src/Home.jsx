@@ -1,20 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Buffer } from "buffer";
 import "./index.css";
+import {
+  uploadImage,
+  deleteImage,
+  getImages,
+} from "./backend/methods/images.cjs";
 
 function Home() {
   const [count, setCount] = useState(0);
   const [addVisible, setAddVisible] = useState(false);
+  const [newPhoto, setNewPhoto] = useState(null);
+  const [newPhotoName, setNewPhotoName] = useState("");
+  const [images, setImages] = useState([]);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    getImages(token).then((data) => {
+      console.log(data);
+
+      const imageData = data.map((file) => {
+        console.log(file.iv);
+        console.log(file.data);
+
+        const decryptedData = {
+          name: file.name,
+          data: file.data.data,
+        };
+
+        return decryptedData;
+      });
+      setImages(imageData);
+      console.log(imageData);
+    });
+  }, []);
 
   const handleUploadFile = (e) => {
     e.preventDefault();
+
+    uploadImage(token, newPhotoName, newPhoto)
+      .then((result) => {
+        setAddVisible(false);
+        console.log(result);
+        setNewPhotoName("");
+      })
+      .catch((err) => {
+        console.error("Error uploading image: ", err);
+      });
   };
 
   const logout = () => {
+    navigate("/");
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
-    navigate("/");
   };
 
   return (
@@ -80,11 +120,20 @@ function Home() {
               >
                 <div className="flex py-2">
                   <p className="m-0 mr-1">Photo Name</p>
-                  <input type="text" />
+                  <input
+                    type="text"
+                    onChange={(e) => setNewPhotoName(e.target.value)}
+                    value={newPhotoName}
+                  />
                 </div>
 
                 <div className="flex py-1">
-                  <input type="file" accept=".png, .jpg, .jpeg, .gif" />
+                  <input
+                    type="file"
+                    accept=".png, .jpg, .jpeg, .gif"
+                    onChange={(e) => setNewPhoto(e.target.files[0])}
+                    required
+                  />
                 </div>
 
                 <button type="submit ">Add!</button>

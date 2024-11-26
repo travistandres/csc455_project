@@ -40,11 +40,13 @@ body {
 }
 
 :root,
-input {
+input,
+button {
   font-family: Orbitron;
 }
 
 .y2k-btn {
+  cursor: pointer;
   border-radius: 103.152px;
   border: 0.868px solid #2fbc22;
   opacity: 0.85;
