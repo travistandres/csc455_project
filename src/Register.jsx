@@ -3,12 +3,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 
-function Login() {
+function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isRegistered, setIsRegistered] = useState(false);
   const navigate = useNavigate();
 
-  const login = async (e) => {
+  const register = async (e) => {
+    setIsRegistered(false);
     e.preventDefault();
 
     const payload = {
@@ -17,7 +19,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://localhost:3000/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,9 +32,7 @@ function Login() {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userData", JSON.stringify(jwtDecode(data.token)));
-      navigate("/home");
+      console.log(data);
     } catch (error) {
       console.log("Error Making the POST Request: ", error.message);
     }
@@ -51,20 +51,20 @@ function Login() {
               <p className="mr-1 my-0">•</p>
               <a href="">Help</a>
               <p className="mr-1 my-0">•</p>
-              <a href="/register">Register</a>
+              <a href="/">Login</a>
             </div>
           </div>
           <hr className="h-[3px] my-3 bg-black border-0 w-full" />
           <div className=" pb-4 p-1 border-4 border-black w-96 shadow-2xl">
             <div className="bg-[#8a2be2] w-full py-1 px-2 border-4 border-black flex justify-between">
-              <h3 className="m-0 text-white">Login.</h3>
+              <h3 className="m-0 text-white">Register.</h3>
               <button className="border-4 border-black">X</button>
             </div>
             <div className=" flex justify-center ">
               <form
                 onSubmit={(e) => {
                   e.stopPropagation(); // Prevent event from bubbling up
-                  login(e);
+                  register(e);
                 }}
               >
                 <div className="py-2"></div>
@@ -88,15 +88,22 @@ function Login() {
                   type="submit"
                   className="border-4 float-start ml-[114px]"
                 >
-                  <p className="m-0 px-3">Login</p>
+                  <p className="m-0 px-3">Register</p>
                 </button>
               </form>
             </div>
           </div>
+
+          {isRegistered && (
+            <div className="text-center mt-4">
+              <h1>Success!</h1>
+              <h2>You can now login</h2>
+            </div>
+          )}
         </div>
       </div>
     </>
   );
 }
 
-export default Login;
+export default Register;
