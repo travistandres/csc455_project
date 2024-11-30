@@ -19,21 +19,14 @@ function Home() {
 
   useEffect(() => {
     getImages(token).then((data) => {
-      console.log(data);
-
-      const imageData = data.map((file) => {
-        console.log(file.iv);
-        console.log(file.data);
-
-        const decryptedData = {
-          name: file.name,
-          data: file.data.data,
-        };
-
-        return decryptedData;
-      });
-      setImages(imageData);
-      console.log(imageData);
+      console.log("frontend " + data[0].name);
+      const images = data.map((file) => ({
+        id: file.id,
+        name: file.name,
+        data: file.data,
+        iv: file.iv,
+      }));
+      setImages(images);
     });
   }, []);
 
@@ -92,6 +85,14 @@ function Home() {
             >
               Add Photos!
             </button>
+          </div>
+          <div className="container-grid mt-10">
+            {images.map((image) => (
+              <div key={image.id} className="flex flex-col items-center">
+                <img src={`data:image/png;base64,${image.data}`} />
+                <p>{image.name}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

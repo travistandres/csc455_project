@@ -85,3 +85,9 @@ button {
   z-index: 99998;
   animation: smoothTransition 0.15s forwards ease-in-out;
 }
+
+.container-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}

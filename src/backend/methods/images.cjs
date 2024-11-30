@@ -86,32 +86,12 @@ export const getImages = (token) => {
         }).then((response) => {
           if (!response.ok) {
             rej(`HTTP error! Status: ${response.status}`);
-          } else {
-            const data = response.json();
-            console.log("Response received:", data);
-
-            // This probably needs to be in the routes Image file for getting images
-            const manipulatedData = data.map((image) => {
-              const encryptedBuffer = Buffer.from(image.data.data, "base64");
-              const iv = Buffer.from(image.iv, "hex");
-              const decipher = crypto.createDecipheriv(
-                "aes-256-cbc",
-                secretKey,
-                iv
-              );
-
-              const decrypted = Buffer.concat([
-                decipher.update(encryptedBuffer),
-                decipher.final(),
-              ]);
-
-              image.data.data = decrypted.toString("base64");
-
-              return image;
-            });
-
-            res(manipulatedData);
           }
+
+          response.json().then((data) => {
+            console.log("Response received:", data);
+            res(data);
+          });
         });
       } catch (error) {
         rej("Error making the GET request:", error.message);

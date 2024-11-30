@@ -115,7 +115,34 @@ router.get("/", (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(rows);
+
+    // Iterate over each row (image) and decrypt the data
+    const manipulatedData = rows.map((image) => {
+      try {
+        // Assuming 'image.data' contains base64-encoded data
+        const encryptedBuffer = Buffer.from(image.data, "base64"); // Decode the base64 string to a buffer
+        const iv = Buffer.from(image.iv, "hex"); // Decode the IV (Initialization Vector) from hex to a buffer
+
+        // Create a decipher object using AES-CBC
+        const decipher = crypto.createDecipheriv("aes-256-cbc", secretKey, iv);
+
+        // Decrypt the data
+        const decrypted = Buffer.concat([
+          decipher.update(encryptedBuffer),
+          decipher.final(),
+        ]);
+
+        // Convert the decrypted buffer back to a base64 string and update the image data
+        image.data = decrypted.toString("base64");
+      } catch (error) {
+        console.error("Decryption error:", error);
+        image.data = null; // Optionally set image data to null if decryption fails
+      }
+
+      return image; // Return the manipulated image object
+    });
+
+    res.json(manipulatedData);
     db.close();
   });
 });
