@@ -9,7 +9,7 @@ import {
 } from "./backend/methods/images.cjs";
 
 function Home() {
-  const [count, setCount] = useState(0);
+  const [dataChanged, setDataChanged] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
   const [newPhoto, setNewPhoto] = useState(null);
   const [newPhotoName, setNewPhotoName] = useState("");
@@ -27,7 +27,7 @@ function Home() {
       }));
       setImages(images);
     });
-  }, []);
+  }, [dataChanged]);
 
   const handleUploadFile = (e) => {
     e.preventDefault();
@@ -37,6 +37,7 @@ function Home() {
         setAddVisible(false);
         console.log(result);
         setNewPhotoName("");
+        setDataChanged(!dataChanged);
       })
       .catch((err) => {
         console.error("Error uploading image: ", err);
