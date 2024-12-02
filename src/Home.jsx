@@ -19,7 +19,6 @@ function Home() {
 
   useEffect(() => {
     getImages(token).then((data) => {
-      console.log("frontend " + data[0].name);
       const images = data.map((file) => ({
         id: file.id,
         name: file.name,
